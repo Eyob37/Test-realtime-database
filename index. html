@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Firebase Realtime Database Test</title>
+</head>
+<body>
+
+    <h1>Firebase Realtime Database Test</h1>
+    <button onclick="writeData()">Write Data</button>
+    <button onclick="readData()">Read Data</button>
+    <button onclick="updateData()">Update Data</button>
+    <button onclick="deleteData()">Delete Data</button>
+
+    <p id="output"></p>
+
+    <!-- Load Firebase SDKs -->
+    <script type="module">
+        // Import Firebase modules (Use 'type="module"' to avoid errors)
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
+        import { getDatabase, ref, set, get, update, remove, child } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-database.js";
+
+        // Firebase configuration (Replace with your Firebase project details)
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+            databaseURL: "https://YOUR_PROJECT_ID.firebaseio.com",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_PROJECT_ID.appspot.com",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+        const dataRef = ref(database, "testData");
+
+        // Write Data
+        window.writeData = function() {
+            set(dataRef, {
+                username: "JohnDoe",
+                score: 100,
+                active: true
+            }).then(() => {
+                document.getElementById("output").innerText = "Data written successfully!";
+            }).catch(error => console.error("Error writing data:", error));
+        };
+
+        // Read Data
+        window.readData = function() {
+            get(dataRef).then(snapshot => {
+                if (snapshot.exists()) {
+                    document.getElementById("output").innerText = "Read Data: " + JSON.stringify(snapshot.val());
+                } else {
+                    document.getElementById("output").innerText = "No data found!";
+                }
+            }).catch(error => console.error("Error reading data:", error));
+        };
+
+        // Update Data
+        window.updateData = function() {
+            update(dataRef, {
+                score: 150
+            }).then(() => {
+                document.getElementById("output").innerText = "Data updated successfully!";
+            }).catch(error => console.error("Error updating data:", error));
+        };
+
+        // Delete Data
+        window.deleteData = function() {
+            remove(dataRef).then(() => {
+                document.getElementById("output").innerText = "Data deleted successfully!";
+            }).catch(error => console.error("Error deleting data:", error));
+        };
+    </script>
+
+</body>
+</html>
