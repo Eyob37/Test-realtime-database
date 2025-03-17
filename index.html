@@ -17,6 +17,7 @@
     <button onclick="readData()">Read Data</button>
     <button onclick="updateData()">Update Data</button>
     <button onclick="deleteData()">Delete Data</button>
+    <button onclick="logout()">Logout</button> <!-- Logout button -->
     <pre id="result"></pre>
 
     <script>
@@ -89,6 +90,18 @@
             usersRef.child("user1").remove()
                 .then(() => console.log("Data Deleted"))
                 .catch(error => console.error("Error:", error));
+        }
+
+        // **10. Logout Function**
+        function logout() {
+            auth.signOut()
+                .then(() => {
+                    console.log("User logged out");
+                    window.location.href = 'login.html'; // Redirect to login page after logout
+                })
+                .catch((error) => {
+                    console.error("Error logging out:", error.message);
+                });
         }
     </script>
 </body>
