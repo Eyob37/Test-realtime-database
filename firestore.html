@@ -4,15 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Firebase Firestore Example</title>
-
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <!-- Firebase Modular SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, collection, doc, addDoc, getDoc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    </script>
 </head>
 <body>
     <h1>Firebase Firestore CRUD Example</h1>
-    
-    
+
     <h2>Firestore Operations</h2>
     <button onclick="addUser()">Add User</button>
     <button onclick="readUser()">Read User</button>
@@ -20,14 +21,13 @@
     <button onclick="deleteUser()">Delete User</button>
     <pre id="result"></pre>
 
-    <script>
+    <script type="module">
         let resultElement = document.getElementById("result");
 
         // **1. Firebase Configuration**
         const firebaseConfig = {
             apiKey: "AIzaSyBb2-D3G0xvbMepV1RtFCawFMbQpVaplj4",
             authDomain: "test-efac0.firebaseapp.com",
-            databaseURL: "https://test-efac0-default-rtdb.firebaseio.com",
             projectId: "test-efac0",
             storageBucket: "test-efac0.appspot.com",
             messagingSenderId: "281809758982",
@@ -36,82 +36,87 @@
         };
 
         // **2. Initialize Firebase**
-        firebase.initializeApp(firebaseConfig);
+        const app = initializeApp(firebaseConfig);
 
         // **3. Initialize Firestore & Authentication**
-        const firestore = firebase.firestore();
-        const auth = firebase.auth();
+        const auth = getAuth(app);
+        const firestore = getFirestore(app);
 
         // **4. Authentication Functions**
-        
-
-        // **5. Firestore CRUD Operations**
-        function addUser() {
-            const userName = prompt("Enter user name:");
-            const userAge = prompt("Enter user age:");
-            const userCity = prompt("Enter user city:");
-
-            firestore.collection("users").add({
-                name: userName,
-                age: parseInt(userAge),
-                city: userCity
-            }).then((docRef) => {
-                console.log("Document written with ID:", docRef.id);
-                resultElement.innerText = "User added with ID: " + docRef.id;
-            }).catch((error) => {
-                console.error("Error adding document:", error);
-            });
-        }
-
-        function readUser() {
-            const userId = prompt("Enter user ID to read:");
-
-            firestore.collection("users").doc(userId).get().then((doc) => {
-                if (doc.exists) {
-                    console.log("Document data:", doc.data());
-                    resultElement.innerText = "User Data: " + JSON.stringify(doc.data(), null, 2);
-                } else {
-                    console.log("No such document!");
-                    resultElement.innerText = "No such document!";
-                }
-            }).catch((error) => {
-                console.log("Error getting document:", error);
-            });
-        }
-
-        function updateUser() {
-            const userId = prompt("Enter user ID to update:");
-            const newAge = prompt("Enter new age:");
-
-            firestore.collection("users").doc(userId).update({
-                age: parseInt(newAge)
-            }).then(() => {
-                console.log("Document successfully updated!");
-                resultElement.innerText = "User age updated!";
-            }).catch((error) => {
-                console.error("Error updating document:", error);
-            });
-        }
-
-        function deleteUser() {
-            const userId = prompt("Enter user ID to delete:");
-
-            firestore.collection("users").doc(userId).delete().then(() => {
-                console.log("Document successfully deleted!");
-                resultElement.innerText = "User deleted!";
-            }).catch((error) => {
-                console.error("Error deleting document:", error);
-            });
-        }
-
-        // **6. Real-Time Listener**
-        auth.onAuthStateChanged(function(user) {
+        onAuthStateChanged(auth, user => {
             if (user) {
                 console.log("User is signed in:", user);
             } else {
                 console.log("No user is signed in.");
             }
         });
+
+        // **5. Firestore CRUD Operations**
+        async function addUser() {
+            const userName = prompt("Enter user name:");
+            const userAge = prompt("Enter user age:");
+            const userCity = prompt("Enter user city:");
+
+            try {
+                const docRef = await addDoc(collection(firestore, "users"), {
+                    name: userName,
+                    age: parseInt(userAge),
+                    city: userCity
+                });
+                console.log("Document written with ID:", docRef.id);
+                resultElement.innerText = "User added with ID: " + docRef.id;
+            } catch (error) {
+                console.error("Error adding document:", error);
+            }
+        }
+
+        async function readUser() {
+            const userId = prompt("Enter user ID to read:");
+
+            try {
+                const docRef = doc(firestore, "users", userId);
+                const docSnap = await getDoc(docRef);
+
+                if (docSnap.exists()) {
+                    console.log("Document data:", docSnap.data());
+                    resultElement.innerText = "User Data: " + JSON.stringify(docSnap.data(), null, 2);
+                } else {
+                    console.log("No such document!");
+                    resultElement.innerText = "No such document!";
+                }
+            } catch (error) {
+                console.error("Error getting document:", error);
+            }
+        }
+
+        async function updateUser() {
+            const userId = prompt("Enter user ID to update:");
+            const newAge = prompt("Enter new age:");
+
+            try {
+                const docRef = doc(firestore, "users", userId);
+                await updateDoc(docRef, {
+                    age: parseInt(newAge)
+                });
+                console.log("Document successfully updated!");
+                resultElement.innerText = "User age updated!";
+            } catch (error) {
+                console.error("Error updating document:", error);
+            }
+        }
+
+        async function deleteUser() {
+            const userId = prompt("Enter user ID to delete:");
+
+            try {
+                const docRef = doc(firestore, "users", userId);
+                await deleteDoc(docRef);
+                console.log("Document successfully deleted!");
+                resultElement.innerText = "User deleted!";
+            } catch (error) {
+                console.error("Error deleting document:", error);
+            }
+        }
     </script>
 </body>
 </html>
