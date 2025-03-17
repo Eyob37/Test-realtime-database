@@ -4,8 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Firebase Realtime Database</title>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js"></script>
+    <!-- Firebase App (Core) -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <!-- Firebase Realtime Database -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
 </head>
 <body>
     <h1>Firebase Realtime Database Example</h1>
@@ -15,26 +17,26 @@
     <button onclick="deleteData()">Delete Data</button>
 
     <script>
-        // **2. Firebase Configuration**
+        // **1. Firebase Configuration**
         const firebaseConfig = {
-            apiKey: "AIzaSyBb2-D3G0xvbMepV1RtFCawFMbQpVaplj4",
-            authDomain: "test-efac0.firebaseapp.com",
-            databaseURL: "https://test-efac0-default-rtdb.firebaseio.com",
-            projectId: "test-efac0",
-            storageBucket: "test-efac0.firebasestorage.app",
-            messagingSenderId: "281809758982",
-            appId: "1:281809758982:web:470e75aeebfc659bf74c87",
-            measurementId: "G-M4C9K5211J"
-        };
+          apiKey: "AIzaSyBb2-D3G0xvbMepV1RtFCawFMbQpVaplj4",
+          authDomain: "test-efac0.firebaseapp.com",
+          databaseURL: "https://test-efac0-default-rtdb.firebaseio.com", 
+          projectId: "test-efac0",
+          storageBucket: "test-efac0.appspot.com",  // Fixed storageBucket
+          messagingSenderId: "281809758982",
+          appId: "1:281809758982:web:470e75aeebfc659bf74c87",
+          measurementId: "G-M4C9K5211J"
+      };
 
-        // **3. Initialize Firebase**
+        // **2. Initialize Firebase**
         firebase.initializeApp(firebaseConfig);
 
-        // **4. Reference the Database**
+        // **3. Reference the Database**
         const database = firebase.database();
         const usersRef = database.ref('users');
 
-        // **5. Write Data**
+        // **4. Write Data**
         function writeData() {
             usersRef.child("user1").set({
                 name: "Eyob",
@@ -44,7 +46,7 @@
               .catch(error => console.error("Error:", error));
         }
 
-        // **6. Read Data**
+        // **5. Read Data**
         function readData() {
             usersRef.child("user1").once("value")
                 .then(snapshot => {
@@ -53,7 +55,7 @@
                 .catch(error => console.error("Error:", error));
         }
 
-        // **7. Update Data**
+        // **6. Update Data**
         function updateData() {
             usersRef.child("user1").update({
                 age: 17
@@ -61,7 +63,7 @@
               .catch(error => console.error("Error:", error));
         }
 
-        // **8. Delete Data**
+        // **7. Delete Data**
         function deleteData() {
             usersRef.child("user1").remove()
                 .then(() => console.log("Data Deleted"))
