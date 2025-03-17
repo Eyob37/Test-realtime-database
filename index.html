@@ -50,7 +50,7 @@
         function readData() {
             usersRef.child("user1").once("value")
                 .then(snapshot => {
-                    console.log("User Data:", snapshot.val());
+                    console.table(snapshot.val());
                 })
                 .catch(error => console.error("Error:", error));
         }
