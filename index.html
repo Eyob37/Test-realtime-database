@@ -54,7 +54,7 @@
               .then(snapshot => {
                  const userData = snapshot.val();
                  console.log("User Data:", JSON.stringify(userData, null, 2));  // Pretty print JSON
-                  res.innerText = "User Data:", JSON.stringify(userData, null, 2);
+                  res.innerText = "User Data:"+ JSON.stringify(userData, null, 2);
                   console.table(userData); // Display in table format
            })
          .catch(error => console.error("Error:", error));
