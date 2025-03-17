@@ -3,24 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Firebase Realtime Database Test</title>
+    <title>Firebase Realtime Database</title>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js"></script>
 </head>
 <body>
-
-    <h1>Firebase Realtime Database Test</h1>
+    <h1>Firebase Realtime Database Example</h1>
     <button onclick="writeData()">Write Data</button>
     <button onclick="readData()">Read Data</button>
     <button onclick="updateData()">Update Data</button>
     <button onclick="deleteData()">Delete Data</button>
 
-    <p id="output"></p>
-
-    <!-- Load Firebase SDKs (Using old method for compatibility) -->
-    <script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-database.js"></script>
-
     <script>
-        // Firebase configuration (your provided details)
+        // **2. Firebase Configuration**
         const firebaseConfig = {
             apiKey: "AIzaSyBb2-D3G0xvbMepV1RtFCawFMbQpVaplj4",
             authDomain: "test-efac0.firebaseapp.com",
@@ -32,49 +27,46 @@
             measurementId: "G-M4C9K5211J"
         };
 
-        // Initialize Firebase
+        // **3. Initialize Firebase**
         firebase.initializeApp(firebaseConfig);
+
+        // **4. Reference the Database**
         const database = firebase.database();
-        const dataRef = database.ref("testData");
+        const usersRef = database.ref('users');
 
-        // Write Data
+        // **5. Write Data**
         function writeData() {
-            dataRef.set({
-                username: "JohnDoe",
-                score: 100,
-                active: true
-            }).then(() => {
-                document.getElementById("output").innerText = "Data written successfully!";
-            }).catch(error => console.error("Error writing data:", error));
+            usersRef.child("user1").set({
+                name: "Eyob",
+                age: 16,
+                city: "Addis Ababa"
+            }).then(() => console.log("Data Written"))
+              .catch(error => console.error("Error:", error));
         }
 
-        // Read Data
+        // **6. Read Data**
         function readData() {
-            dataRef.once("value").then(snapshot => {
-                if (snapshot.exists()) {
-                    document.getElementById("output").innerText = "Read Data: " + JSON.stringify(snapshot.val());
-                } else {
-                    document.getElementById("output").innerText = "No data found!";
-                }
-            }).catch(error => console.error("Error reading data:", error));
+            usersRef.child("user1").once("value")
+                .then(snapshot => {
+                    console.log("User Data:", snapshot.val());
+                })
+                .catch(error => console.error("Error:", error));
         }
 
-        // Update Data
+        // **7. Update Data**
         function updateData() {
-            dataRef.update({
-                score: 150
-            }).then(() => {
-                document.getElementById("output").innerText = "Data updated successfully!";
-            }).catch(error => console.error("Error updating data:", error));
+            usersRef.child("user1").update({
+                age: 17
+            }).then(() => console.log("Data Updated"))
+              .catch(error => console.error("Error:", error));
         }
 
-        // Delete Data
+        // **8. Delete Data**
         function deleteData() {
-            dataRef.remove().then(() => {
-                document.getElementById("output").innerText = "Data deleted successfully!";
-            }).catch(error => console.error("Error deleting data:", error));
+            usersRef.child("user1").remove()
+                .then(() => console.log("Data Deleted"))
+                .catch(error => console.error("Error:", error));
         }
     </script>
-
 </body>
 </html>
