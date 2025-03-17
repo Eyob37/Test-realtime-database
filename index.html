@@ -15,7 +15,7 @@
     <button onclick="readData()">Read Data</button>
     <button onclick="updateData()">Update Data</button>
     <button onclick="deleteData()">Delete Data</button>
-    <p id = "result"></p>
+    <pre id="result"></pre>
 
     <script>
         let res = document.getElementById("result");
@@ -50,13 +50,13 @@
 
         // **5. Read Data**
         function readData() {
-           usersRef.child("user1").once("value")
-              .then(snapshot => {
-                 const userData = snapshot.val();
-                 console.log("User Data:", JSON.stringify(userData, null, 2));  // Pretty print JSON
-                  res.innerText = "User Data:"+ JSON.stringify(userData, null, 2);
-                  console.table(userData); // Display in table format
-           })
+          usersRef.child("user1").once("value")
+            .then(snapshot => {
+               const userData = snapshot.val();
+               console.log("User Data:", JSON.stringify(userData, null, 2));
+               res.innerText = "User Data:\n" + JSON.stringify(userData, null, 2);
+               console.table(userData);
+         })
          .catch(error => console.error("Error:", error));
        }
 
