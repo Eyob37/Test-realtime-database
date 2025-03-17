@@ -15,8 +15,10 @@
     <button onclick="readData()">Read Data</button>
     <button onclick="updateData()">Update Data</button>
     <button onclick="deleteData()">Delete Data</button>
+    <p id = "result"></p>
 
     <script>
+        let res = document.getElementById("result");
         // **1. Firebase Configuration**
         const firebaseConfig = {
           apiKey: "AIzaSyBb2-D3G0xvbMepV1RtFCawFMbQpVaplj4",
@@ -52,6 +54,7 @@
               .then(snapshot => {
                  const userData = snapshot.val();
                  console.log("User Data:", JSON.stringify(userData, null, 2));  // Pretty print JSON
+                  res.innerText = "User Data:", JSON.stringify(userData, null, 2);
                   console.table(userData); // Display in table format
            })
          .catch(error => console.error("Error:", error));
