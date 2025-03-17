@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signup - Firebase Authentication</title>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+</head>
+<body>
+    <h1>Create Account</h1>
+    <form id="signup-form">
+        <input type="email" id="email" placeholder="Enter email" required />
+        <input type="password" id="password" placeholder="Enter password" required />
+        <button type="submit">Sign Up</button>
+    </form>
+
+    <p>Already have an account? <a href="login.html">Login here</a></p>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyBb2-D3G0xvbMepV1RtFCawFMbQpVaplj4",
+            authDomain: "test-efac0.firebaseapp.com",
+            databaseURL: "https://test-efac0-default-rtdb.firebaseio.com",
+            projectId: "test-efac0",
+            storageBucket: "test-efac0.appspot.com",
+            messagingSenderId: "281809758982",
+            appId: "1:281809758982:web:470e75aeebfc659bf74c87",
+            measurementId: "G-M4C9K5211J"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+
+        const auth = firebase.auth();
+
+        const signupForm = document.getElementById("signup-form");
+
+        signupForm.addEventListener("submit", (event) => {
+            event.preventDefault();
+
+            const email = document.getElementById("email").value;
+            const password = document.getElementById("password").value;
+
+            auth.createUserWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    const user = userCredential.user;
+                    console.log("User signed up:", user);
+                    // Optionally redirect to the homepage or main page after signup
+                    window.location.href = "index.html"; // Or another page
+                })
+                .catch((error) => {
+                    console.error("Error signing up:", error.message);
+                });
+        });
+    </script>
+</body>
+</html>
