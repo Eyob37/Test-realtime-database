@@ -18,6 +18,7 @@
     <button onclick="updateData()">Update Data</button>
     <button onclick="deleteData()">Delete Data</button>
     <button onclick="logout()">Logout</button> <!-- Logout button -->
+    <button onclick="gofs()">Fire store</button>
     <pre id="result"></pre>
 
     <script>
@@ -102,6 +103,10 @@
                 .catch((error) => {
                     console.error("Error logging out:", error.message);
                 });
+        }
+        function gofs(){
+           window.location.href = "firestore.html";
+        
         }
     </script>
 </body>
