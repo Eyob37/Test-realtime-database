@@ -8,6 +8,8 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <!-- Firebase Realtime Database -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+    <!-- Firebase Authentication -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
 </head>
 <body>
     <h1>Firebase Realtime Database Example</h1>
@@ -19,26 +21,40 @@
 
     <script>
         let res = document.getElementById("result");
+
         // **1. Firebase Configuration**
         const firebaseConfig = {
           apiKey: "AIzaSyBb2-D3G0xvbMepV1RtFCawFMbQpVaplj4",
           authDomain: "test-efac0.firebaseapp.com",
-          databaseURL: "https://test-efac0-default-rtdb.firebaseio.com", 
+          databaseURL: "https://test-efac0-default-rtdb.firebaseio.com",
           projectId: "test-efac0",
-          storageBucket: "test-efac0.appspot.com",  // Fixed storageBucket
+          storageBucket: "test-efac0.appspot.com",
           messagingSenderId: "281809758982",
           appId: "1:281809758982:web:470e75aeebfc659bf74c87",
           measurementId: "G-M4C9K5211J"
-      };
+        };
 
         // **2. Initialize Firebase**
         firebase.initializeApp(firebaseConfig);
 
         // **3. Reference the Database**
         const database = firebase.database();
-        const usersRef = database.ref('users');     	
+        const usersRef = database.ref('users');   
 
-        // **4. Write Data**
+        // **4. Firebase Authentication**
+        const auth = firebase.auth();
+
+        // **5. Handle Authentication State**
+        auth.onAuthStateChanged(function(user) {
+            if (!user) {
+                // Redirect to signup page if no user is logged in
+                window.location.href = 'signup.html'; // Adjust the path if necessary
+            } else {
+                console.log("User logged in:", user);
+            }
+        });
+
+        // **6. Write Data**
         function writeData() {
             usersRef.child("user1").set({
                 name: "Eyob",
@@ -48,19 +64,19 @@
               .catch(error => console.error("Error:", error));
         }
 
-        // **5. Read Data**
+        // **7. Read Data**
         function readData() {
-          usersRef.child("user1").once("value")
+            usersRef.child("user1").once("value")
             .then(snapshot => {
                const userData = snapshot.val();
                console.log("User Data:", JSON.stringify(userData, null, 2));
                res.innerText = "User Data:\n" + JSON.stringify(userData, null, 2);
                console.table(userData);
-         })
-         .catch(error => console.error("Error:", error));
-       }
+            })
+            .catch(error => console.error("Error:", error));
+        }
 
-        // **6. Update Data**
+        // **8. Update Data**
         function updateData() {
             usersRef.child("user1").update({
                 age: 17
@@ -68,7 +84,7 @@
               .catch(error => console.error("Error:", error));
         }
 
-        // **7. Delete Data**
+        // **9. Delete Data**
         function deleteData() {
             usersRef.child("user1").remove()
                 .then(() => console.log("Data Deleted"))
