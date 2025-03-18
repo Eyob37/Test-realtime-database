@@ -96,7 +96,7 @@
         }
 
         window.updateUser = async function (userId) {
-            const newAge = prompt("Enter new age:");
+            const newAge = document.getElementById("age").value;
             if (!newAge) return;
 
             try {
