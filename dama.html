@@ -41,7 +41,7 @@
     <script type="module">
         // Import Firebase
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-        import { getDatabase, ref, set, onValue, get } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+        import { getDatabase, ref, set, onValue, get, onDisconnect } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
 
         // **Your Firebase Configuration**
         const firebaseConfig = {
@@ -86,19 +86,24 @@
 
         // **Assign Player**
         async function assignPlayer() {
-            const snapshot = await get(gameRef);
-            const data = snapshot.val();
-            
-            if (!data || !data.player1) {
-                player = "p1";
-                await set(ref(database, "damaGame/player1"), true);
-            } else if (!data.player2) {
-                player = "p2";
-                await set(ref(database, "damaGame/player2"), true);
-            } else {
-                alert("Game is full! Try again later.");
+            try {
+                const snapshot = await get(gameRef);
+                const data = snapshot.val();
+
+                if (!data || !data.player1) {
+                    player = "p1";
+                    await set(ref(database, "damaGame/player1"), true);
+                } else if (!data.player2) {
+                    player = "p2";
+                    await set(ref(database, "damaGame/player2"), true);
+                } else {
+                    alert("Game is full! Try again later.");
+                }
+                statusText.textContent = `You are Player ${player === "p1" ? "1 (Red)" : "2 (Blue)"}`;
+            } catch (error) {
+                console.error("Error assigning player:", error);
+                statusText.textContent = "Error connecting to the game. Please check your internet connection.";
             }
-            statusText.textContent = `You are Player ${player === "p1" ? "1 (Red)" : "2 (Blue)"}`;
         }
 
         // **Update Board from Firebase**
@@ -152,6 +157,10 @@
                     set(ref(database, "damaGame"), { board, currentPlayer: "p1" });
                 }
             });
+
+            // Detect when the client disconnects and update the Firebase game status
+            onDisconnect(gameRef).remove();
+
             createBoard();
         }
 
