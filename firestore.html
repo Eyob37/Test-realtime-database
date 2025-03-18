@@ -3,26 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Firebase Firestore Example</title>
+    <title>Firebase Firestore CRUD</title>
 </head>
 <body>
     <h1>Firebase Firestore CRUD Example</h1>
 
     <h2>Firestore Operations</h2>
+    
+    <label for="name">Enter Name:</label>
+    <input id="name" type="text"><br>
+
+    <label for="age">Enter Age:</label>
+    <input id="age" type="number"><br>
+
+    <label for="city">Enter City:</label>
+    <input id="city" type="text"><br>
+
     <button id="addUser">Add User</button>
-    <button id="readUser">Read User</button>
+    <button id="readUsers">Read Users</button>
     <button id="updateUser">Update User</button>
     <button id="deleteUser">Delete User</button>
-    <pre id="result"></pre><br>
-  Enter name  <input id = "name" type= "text"><br>
-Enter age  <input id = "age" type= "number"><br>
-Enter city  <input id = "name" type= "text"><br>
+
+    <h3>Result:</h3>
+    <pre id="result"></pre>
+
+    <h3>Users List:</h3>
+    <ul id="usersList"></ul>
 
     <script type="module">
         // **1. Import Firebase Modules**
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, collection, doc, addDoc, getDoc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, doc, addDoc, getDocs, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         // **2. Firebase Configuration**
         const firebaseConfig = {
@@ -37,94 +48,90 @@ Enter city  <input id = "name" type= "text"><br>
 
         // **3. Initialize Firebase**
         const app = initializeApp(firebaseConfig);
-
-        // **4. Initialize Firestore & Authentication**
-        const auth = getAuth(app);
         const firestore = getFirestore(app);
 
-        let resultElement = document.getElementById("result");
+        // **4. Reference Elements**
+        const resultElement = document.getElementById("result");
+        const usersList = document.getElementById("usersList");
 
-        // **5. Authentication Listener**
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                console.log("User is signed in:", user);
-            } else {
-                console.log("No user is signed in.");
-            }
-        });
-
-        // **6. Firestore CRUD Operations**
+        // **5. Firestore CRUD Operations**
         async function addUser() {
-            const userName = prompt("Enter user name:");
-            const userAge = prompt("Enter user age:");
-            const userCity = prompt("Enter user city:");
+            const name = document.getElementById("name").value;
+            const age = document.getElementById("age").value;
+            const city = document.getElementById("city").value;
+
+            if (!name || !age || !city) {
+                resultElement.innerText = "Please fill in all fields!";
+                return;
+            }
 
             try {
                 const docRef = await addDoc(collection(firestore, "users"), {
-                    name: userName,
-                    age: parseInt(userAge),
-                    city: userCity
+                    name: name,
+                    age: parseInt(age),
+                    city: city
                 });
-                console.log("Document written with ID:", docRef.id);
-                resultElement.innerText = "User added with ID: " + docRef.id;
+                resultElement.innerText = `User added with ID: ${docRef.id}`;
+                document.getElementById("name").value = "";
+                document.getElementById("age").value = "";
+                document.getElementById("city").value = "";
+                readUsers(); // Refresh user list
             } catch (error) {
-                console.error("Error adding document:", error);
+                resultElement.innerText = `Error: ${error.message}`;
             }
         }
 
-        async function readUser() {
-            const userId = prompt("Enter user ID to read:");
-
+        async function readUsers() {
+            usersList.innerHTML = "";
             try {
-                const docRef = doc(firestore, "users", userId);
-                const docSnap = await getDoc(docRef);
-
-                if (docSnap.exists()) {
-                    console.log("Document data:", docSnap.data());
-                    resultElement.innerText = "User Data: " + JSON.stringify(docSnap.data(), null, 2);
+                const querySnapshot = await getDocs(collection(firestore, "users"));
+                if (querySnapshot.empty) {
+                    usersList.innerHTML = "<li>No users found</li>";
                 } else {
-                    console.log("No such document!");
-                    resultElement.innerText = "No such document!";
+                    querySnapshot.forEach(doc => {
+                        const user = doc.data();
+                        const listItem = document.createElement("li");
+                        listItem.innerHTML = `<strong>${user.name}</strong>, Age: ${user.age}, City: ${user.city} 
+                        <button onclick="updateUser('${doc.id}')">Edit</button>
+                        <button onclick="deleteUser('${doc.id}')">Delete</button>`;
+                        usersList.appendChild(listItem);
+                    });
                 }
             } catch (error) {
-                console.error("Error getting document:", error);
+                resultElement.innerText = `Error: ${error.message}`;
             }
         }
 
-        async function updateUser() {
-            const userId = prompt("Enter user ID to update:");
+        async function updateUser(userId) {
             const newAge = prompt("Enter new age:");
+            if (!newAge) return;
 
             try {
                 const docRef = doc(firestore, "users", userId);
-                await updateDoc(docRef, {
-                    age: parseInt(newAge)
-                });
-                console.log("Document successfully updated!");
+                await updateDoc(docRef, { age: parseInt(newAge) });
                 resultElement.innerText = "User age updated!";
+                readUsers();
             } catch (error) {
-                console.error("Error updating document:", error);
+                resultElement.innerText = `Error: ${error.message}`;
             }
         }
 
-        async function deleteUser() {
-            const userId = prompt("Enter user ID to delete:");
+        async function deleteUser(userId) {
+            if (!confirm("Are you sure you want to delete this user?")) return;
 
             try {
                 const docRef = doc(firestore, "users", userId);
                 await deleteDoc(docRef);
-                console.log("Document successfully deleted!");
                 resultElement.innerText = "User deleted!";
+                readUsers();
             } catch (error) {
-                console.error("Error deleting document:", error);
+                resultElement.innerText = `Error: ${error.message}`;
             }
         }
 
-        // **7. Attach Functions to Buttons**
+        // **6. Attach Functions to Buttons**
         document.getElementById("addUser").addEventListener("click", addUser);
-        document.getElementById("readUser").addEventListener("click", readUser);
-        document.getElementById("updateUser").addEventListener("click", updateUser);
-        document.getElementById("deleteUser").addEventListener("click", deleteUser);
+        document.getElementById("readUsers").addEventListener("click", readUsers);
     </script>
 </body>
 </html>
