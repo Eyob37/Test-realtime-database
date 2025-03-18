@@ -97,11 +97,16 @@
 
         window.updateUser = async function (userId) {
             const newAge = document.getElementById("age").value;
+            const newName = document.getElementById("name").value;
+            const newCity = document.getElementById("city").value;
             if (!newAge) return;
 
             try {
                 const docRef = doc(firestore, "users", userId);
-                await updateDoc(docRef, { age: parseInt(newAge) });
+                await updateDoc(docRef, { name: newName,
+                                    age: parseInt(newAge),
+                                    city: newCity;   
+                 });
                 resultElement.innerText = "User age updated!";
                 readUsers();
             } catch (error) {
