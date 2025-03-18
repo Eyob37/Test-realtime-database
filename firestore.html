@@ -105,7 +105,7 @@
                 const docRef = doc(firestore, "users", userId);
                 await updateDoc(docRef, { name: newName,
                                     age: parseInt(newAge),
-                                    city: newCity;   
+                                    city: newCity
                  });
                 resultElement.innerText = "User age updated!";
                 readUsers();
