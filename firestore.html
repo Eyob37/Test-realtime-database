@@ -21,8 +21,6 @@
 
     <button id="addUser">Add User</button>
     <button id="readUsers">Read Users</button>
-    <button id="updateUser">Update User</button>
-    <button id="deleteUser">Delete User</button>
 
     <h3>Result:</h3>
     <pre id="result"></pre>
@@ -31,11 +29,9 @@
     <ul id="usersList"></ul>
 
     <script type="module">
-        // **1. Import Firebase Modules**
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, doc, addDoc, getDocs, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // **2. Firebase Configuration**
         const firebaseConfig = {
             apiKey: "AIzaSyBb2-D3G0xvbMepV1RtFCawFMbQpVaplj4",
             authDomain: "test-efac0.firebaseapp.com",
@@ -46,15 +42,12 @@
             measurementId: "G-M4C9K5211J"
         };
 
-        // **3. Initialize Firebase**
         const app = initializeApp(firebaseConfig);
         const firestore = getFirestore(app);
 
-        // **4. Reference Elements**
         const resultElement = document.getElementById("result");
         const usersList = document.getElementById("usersList");
 
-        // **5. Firestore CRUD Operations**
         async function addUser() {
             const name = document.getElementById("name").value;
             const age = document.getElementById("age").value;
@@ -75,7 +68,7 @@
                 document.getElementById("name").value = "";
                 document.getElementById("age").value = "";
                 document.getElementById("city").value = "";
-                readUsers(); // Refresh user list
+                readUsers();
             } catch (error) {
                 resultElement.innerText = `Error: ${error.message}`;
             }
@@ -102,7 +95,7 @@
             }
         }
 
-        async function updateUser(userId) {
+        window.updateUser = async function (userId) {
             const newAge = prompt("Enter new age:");
             if (!newAge) return;
 
@@ -114,9 +107,9 @@
             } catch (error) {
                 resultElement.innerText = `Error: ${error.message}`;
             }
-        }
+        };
 
-        async function deleteUser(userId) {
+        window.deleteUser = async function (userId) {
             if (!confirm("Are you sure you want to delete this user?")) return;
 
             try {
@@ -127,9 +120,8 @@
             } catch (error) {
                 resultElement.innerText = `Error: ${error.message}`;
             }
-        }
+        };
 
-        // **6. Attach Functions to Buttons**
         document.getElementById("addUser").addEventListener("click", addUser);
         document.getElementById("readUsers").addEventListener("click", readUsers);
     </script>
