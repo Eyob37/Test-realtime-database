@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>View Messages</title>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+</head>
+<body>
+    <h1>Your Messages</h1>
+    <div id="messages"></div>
+
+    <script>
+        // Firebase config
+        const firebaseConfig = {
+            apiKey: "AIzaSyBb2-D3G0xvbMepV1RtFCawFMbQpVaplj4",
+            authDomain: "test-efac0.firebaseapp.com",
+            databaseURL: "https://test-efac0-default-rtdb.firebaseio.com",
+            projectId: "test-efac0",
+            storageBucket: "test-efac0.appspot.com",
+            messagingSenderId: "281809758982",
+            appId: "1:281809758982:web:470e75aeebfc659bf74c87",
+            measurementId: "G-M4C9K5211J"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+
+        const auth = firebase.auth();
+        const database = firebase.database();
+
+        function sanitizeEmail(email) {
+            return email.replace(/\./g, "_dot_").replace(/@/g, "_at_");
+        }
+
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                const emailKey = sanitizeEmail(user.email);
+                const messageRef = database.ref("messages/" + emailKey);
+
+                messageRef.on("value", (snapshot) => {
+                    const messagesDiv = document.getElementById("messages");
+                    messagesDiv.innerHTML = "";
+
+                    const data = snapshot.val();
+                    if (data) {
+                        Object.values(data).forEach((msg) => {
+                            const msgDiv = document.createElement("div");
+                            msgDiv.textContent = `${msg.timestamp}: ${msg.message}`;
+                            messagesDiv.appendChild(msgDiv);
+                        });
+                    } else {
+                        messagesDiv.textContent = "No messages found.";
+                    }
+                });
+            } else {
+                alert("Please login to view messages.");
+                window.location.href = "login.html";
+            }
+        });
+    </script>
+</body>
+</html>
