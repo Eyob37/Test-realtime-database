@@ -94,7 +94,8 @@
     onValue(chatsRef, (snapshot) => {
       chatList.innerHTML = "";
       usersPreviewed.clear();
-
+    
+      alert("Hello, all.");
       snapshot.forEach((chatSnap) => {
         const chatId = chatSnap.key;
 
