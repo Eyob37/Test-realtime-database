@@ -11,14 +11,14 @@ if ("Notification" in window) {
     if (Notification.permission !== "granted") {
         Notification.requestPermission().then(permission => {
             if (permission === "granted") {
-alert("I don't know");
+alert("I don't know1");
                 showNotification("ሰላም ለሁላቹም ይሁን");
             } else {
                 alert("Permission not granted");
             }
         });
     } else {
-alert("I don't know");
+alert("I don't know2");
         showNotification("ሰላም ለሁላቹም ይሁን");
     }
 }
