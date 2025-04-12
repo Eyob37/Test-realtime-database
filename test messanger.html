@@ -5,30 +5,37 @@
     <title>Page title</title>
 </head>
 <body>
-    hello, it is updated, the icon is removed
+    hello, it is updated, w
     <script>
-if ("Notification" in window) {
-    if (Notification.permission !== "granted") {
-        Notification.requestPermission().then(permission => {
-            if (permission === "granted") {
-                alert("It almost work");
-                showNotification("ሰላም ለሁላቹም ይሁን");
+        function showNotification(text) {
+            // Check permission again right before showing
+            if (Notification.permission === "granted") {
+                new Notification("New message", {
+                    body: text,
+                });
+                alert("it works");
             } else {
-                alert("Permission not granted");
+                alert("Notification permission not granted");
             }
-        });
-    } else {
-        alert("It almost work");
-        showNotification("ሰላም ለሁላቹም ይሁን");
-    }
-}
+        }
 
-function showNotification(text) {
-    new Notification("New message", {
-        body: text,
-    });
-    alert("it works");
-}
-</script>
+        if ("Notification" in window) {
+            if (Notification.permission === "granted") {
+                alert("It almost work");
+                showNotification("ሰላም �ሁላችሁ ይሁን");
+            } else {
+                Notification.requestPermission().then(permission => {
+                    if (permission === "granted") {
+                        alert("It almost work");
+                        showNotification("ሰላም ለሁላቹም ይሁን");
+                    } else {
+                        alert("Permission not granted");
+                    }
+                });
+            }
+        } else {
+            alert("This browser does not support notifications");
+        }
+    </script>
 </body>
 </html>
