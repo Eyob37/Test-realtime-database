@@ -2,21 +2,34 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Page title</title>
+    <title>Notification Demo</title>
 </head>
-<body>hh
+<body>
     <button onclick="requestNotificationPermission()">Click to Enable Notifications</button>
+
     <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').then(registration => {
+                console.log("Service Worker registered");
+                window.swRegistration = registration;
+            }).catch(err => {
+                alert("Service Worker registration failed: " + err);
+            });
+        } else {
+            alert("Service Workers are not supported in this browser.");
+        }
+
         function showNotification(text) {
+            if (!window.swRegistration) {
+                alert("Service Worker not ready.");
+                return;
+            }
+
             try {
-                if (Notification.permission === "granted") {
-                    const notification = new Notification("New message", { 
-                        body: text
-                    });
-                    alert("Notification sent! Check your system tray.");
-                } else {
-                    alert("Cannot show notification: Permission not granted.");
-                }
+                window.swRegistration.showNotification("New message", {
+                    body: text,
+                    icon: "icon.png" // optional
+                });
             } catch (error) {
                 alert("Failed to show notification: " + error.message);
             }
@@ -28,20 +41,13 @@
                 return;
             }
 
-            if (Notification.permission === "granted") {
-                showNotification("ሰላም ለሁላቹም ይሁን");
-            } 
-            else if (Notification.permission !== "denied") {
-                Notification.requestPermission().then(permission => {
-                    if (permission === "granted") {
-                        showNotification("ሰላም ለሁላቹም ይሁን");
-                    } else {
-                        alert("Permission denied. Notifications won't work.");
-                    }
-                });
-            } else {
-                alert("Notifications were previously blocked. Enable them in browser settings.");
-            }
+            Notification.requestPermission().then(permission => {
+                if (permission === "granted") {
+                    showNotification("ሰላም ለሁላቹም ይሁን");
+                } else {
+                    alert("Permission denied.");
+                }
+            });
         }
     </script>
 </body>
