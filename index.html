@@ -70,6 +70,15 @@
               .catch(error => console.error("Error:", error));
         }
 
+        onValue(usersRef.child("user1"), (snapshot) => {            
+               const userData = snapshot.val();
+               console.log("User Data:", JSON.stringify(userData, null, 2));
+               res.innerText = "User Data:\n" + JSON.stringify(userData, null, 2);
+               console.table(userData);
+            })
+            .catch(error => console.error("Error:", error));
+
+      
         // **7. Read Data**
         function readData() {
             usersRef.child("user1").once("value")
