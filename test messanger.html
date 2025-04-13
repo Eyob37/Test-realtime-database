@@ -8,6 +8,7 @@
     <button onclick="requestNotificationPermission()">Click to Enable Notifications</button>
     <script>
         function showNotification(text) {
+            alert("it is get in");
             if (Notification.permission === "granted") {
                 new Notification("New message", { body: text });
                 alert("Notification sent! Check your system notifications.");
