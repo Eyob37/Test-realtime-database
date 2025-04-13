@@ -5,14 +5,12 @@
     <title>Page title</title>
 </head>
 <body>
-    hello, it is updated
+    hello, it is update
     <script>
         function showNotification(text) {
             // Check permission again right before showing
             if (Notification.permission === "granted") {
-                new Notification("New message", {
-                    body: text,
-                });
+                new Notification("New message");
                 alert("it works");
             } else {
                 alert("Notification permission not granted");
