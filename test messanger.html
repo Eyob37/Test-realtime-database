@@ -8,12 +8,17 @@
     <button onclick="requestNotificationPermission()">Click to Enable Notifications</button>
     <script>
         function showNotification(text) {
-            alert("it is get in");
-            if (Notification.permission === "granted") {
-                new Notification("New message", { body: text });
-                alert("Notification sent! Check your system notifications.");
-            } else {
-                alert("Cannot show notification: Permission not granted.");
+            try {
+                if (Notification.permission === "granted") {
+                    const notification = new Notification("New message", { 
+                        body: text
+                    });
+                    alert("Notification sent! Check your system tray.");
+                } else {
+                    alert("Cannot show notification: Permission not granted.");
+                }
+            } catch (error) {
+                alert("Failed to show notification: " + error.message);
             }
         }
 
@@ -23,21 +28,19 @@
                 return;
             }
 
-            if (Notification.permission === "granted") {  // Fix: Typo "granted" → "granted"
-                alert("It almost work");
-                showNotification("ሰላም ለሁላቹም �ይሁን");
+            if (Notification.permission === "granted") {
+                showNotification("ሰላም ለሁላቹም ይሁን");
             } 
             else if (Notification.permission !== "denied") {
                 Notification.requestPermission().then(permission => {
                     if (permission === "granted") {
-                        alert("It almost work");
                         showNotification("ሰላም ለሁላቹም ይሁን");
                     } else {
                         alert("Permission denied. Notifications won't work.");
                     }
                 });
             } else {
-                alert("Notifications were previously blocked. Please enable them in browser settings.");
+                alert("Notifications were previously blocked. Enable them in browser settings.");
             }
         }
     </script>
