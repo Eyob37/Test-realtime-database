@@ -5,34 +5,37 @@
     <title>Page title</title>
 </head>
 <body>
-    hello, it is update
+    <button onclick="requestNotificationPermission()">Click to Enable Notifications</button>
     <script>
         function showNotification(text) {
-            // Check permission again right before showing
             if (Notification.permission === "granted") {
-                new Notification("New message");
-                alert("it works");
+                new Notification("New message", { body: text });
+                alert("Notification sent! Check your system notifications.");
             } else {
-                alert("Notification permission not granted");
+                alert("Cannot show notification: Permission not granted.");
             }
         }
 
-        if ("Notification" in window) {
-            if (Notification.permission === "granted") {
-                alert("It almost work");
-                showNotification("ሰላም �ሁላችሁ ይሁን");
-            } else {
+        function requestNotificationPermission() {
+            if (!("Notification" in window)) {
+                alert("This browser does not support notifications.");
+                return;
+            }
+
+            if (Notification.permission === "granted") {  // Fix: Typo "granted" → "granted"
+                showNotification("ሰላም ለሁላቹም �ይሁን");
+            } 
+            else if (Notification.permission !== "denied") {
                 Notification.requestPermission().then(permission => {
                     if (permission === "granted") {
-                        alert("It almost work");
                         showNotification("ሰላም ለሁላቹም ይሁን");
                     } else {
-                        alert("Permission not granted");
+                        alert("Permission denied. Notifications won't work.");
                     }
                 });
+            } else {
+                alert("Notifications were previously blocked. Please enable them in browser settings.");
             }
-        } else {
-            alert("This browser does not support notifications");
         }
     </script>
 </body>
