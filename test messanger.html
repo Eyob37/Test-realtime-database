@@ -23,11 +23,13 @@
             }
 
             if (Notification.permission === "granted") {  // Fix: Typo "granted" → "granted"
+                alert("It almost work");
                 showNotification("ሰላም ለሁላቹም �ይሁን");
             } 
             else if (Notification.permission !== "denied") {
                 Notification.requestPermission().then(permission => {
                     if (permission === "granted") {
+                        alert("It almost work");
                         showNotification("ሰላም ለሁላቹም ይሁን");
                     } else {
                         alert("Permission denied. Notifications won't work.");
