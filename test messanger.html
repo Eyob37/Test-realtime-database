@@ -5,15 +5,37 @@
     <title>Page title</title>
 </head>
 <body>
-    hello, 
+    hello, it is updated
     <script>
-        Notification.requestPermission()
-       .then(permission =>{
-           if(permission === 'granted'){
-             new Notification("hello");
-          }      
-      })
+        function showNotification(text) {
+            // Check permission again right before showing
+            if (Notification.permission === "granted") {
+                new Notification("New message", {
+                    body: text,
+                });
+                alert("it works");
+            } else {
+                alert("Notification permission not granted");
+            }
+        }
 
+        if ("Notification" in window) {
+            if (Notification.permission === "granted") {
+                alert("It almost work");
+                showNotification("ሰላም �ሁላችሁ ይሁን");
+            } else {
+                Notification.requestPermission().then(permission => {
+                    if (permission === "granted") {
+                        alert("It almost work");
+                        showNotification("ሰላም ለሁላቹም ይሁን");
+                    } else {
+                        alert("Permission not granted");
+                    }
+                });
+            }
+        } else {
+            alert("This browser does not support notifications");
+        }
     </script>
 </body>
 </html>
