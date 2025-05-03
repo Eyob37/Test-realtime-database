@@ -1,136 +1,118 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Firebase Realtime Database</title>
-    <!-- Firebase App (Core) -->
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <!-- Firebase Realtime Database -->
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
-    <!-- Firebase Authentication -->
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Firebase Realtime Database (Modular)</title>
 </head>
 <body>
-    <h1>Firebase Realtime Database Example</h1>
-    <button onclick="writeData()">Write Data</button>
-    <button onclick="readData()">Read Data</button>
-    <button onclick="updateData()">Update Data</button>
-    <button onclick="deleteData()">Delete Data</button>
-    <button onclick="logout()">Logout</button> <!-- Logout button -->
-    <button onclick="gofs()">Fire store</button>
-    <button onclick="goda()">go to dama</button>
-    <button onclick="window.location.href = 'store by email.html'">goto store by email</button>
-    <button onclick="window.location.href = 'message recive.html'">goto store by email</button>
-    <button onclick="window.location.href = 'test messanger.html'">test messanger</button>
-<button onclick="window.location.href = 'test ai.html'">test ai</button>
+  <h1>Firebase Realtime Database Example</h1>
+  <button onclick="writeData()">Write Data</button>
+  <button onclick="readData()">Read Data</button>
+  <button onclick="updateData()">Update Data</button>
+  <button onclick="deleteData()">Delete Data</button>
+  <button onclick="logout()">Logout</button>
+  <button onclick="gofs()">Fire store</button>
+  <button onclick="goda()">Go to dama</button>
+  <button onclick="window.location.href = 'store by email.html'">Store by email</button>
+  <button onclick="window.location.href = 'message recive.html'">Message receive</button>
+  <button onclick="window.location.href = 'test messanger.html'">Test messenger</button>
+  <button onclick="window.location.href = 'test ai.html'">Test AI</button>
 
-    <pre id="result"></pre>
+  <pre id="result"></pre>
 
-    <script type= "module">
-        import { 
-          onValue  
-        } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";  
-  
-        let res = document.getElementById("result");
+  <script type="module">
+    // Firebase Modular SDK imports
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+    import { getDatabase, ref, set, update, remove, child, get, onValue } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
 
-        // **1. Firebase Configuration**
-        const firebaseConfig = {
-          apiKey: "AIzaSyBb2-D3G0xvbMepV1RtFCawFMbQpVaplj4",
-          authDomain: "test-efac0.firebaseapp.com",
-          databaseURL: "https://test-efac0-default-rtdb.firebaseio.com",
-          projectId: "test-efac0",
-          storageBucket: "test-efac0.appspot.com",
-          messagingSenderId: "281809758982",
-          appId: "1:281809758982:web:470e75aeebfc659bf74c87",
-          measurementId: "G-M4C9K5211J"
-        };
+    const res = document.getElementById("result");
 
-        // **2. Initialize Firebase**
-        firebase.initializeApp(firebaseConfig);
+    // 1. Firebase Configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyBb2-D3G0xvbMepV1RtFCawFMbQpVaplj4",
+      authDomain: "test-efac0.firebaseapp.com",
+      databaseURL: "https://test-efac0-default-rtdb.firebaseio.com",
+      projectId: "test-efac0",
+      storageBucket: "test-efac0.appspot.com",
+      messagingSenderId: "281809758982",
+      appId: "1:281809758982:web:470e75aeebfc659bf74c87",
+      measurementId: "G-M4C9K5211J"
+    };
 
-        // **3. Reference the Database**
-        const database = firebase.database();
-        const usersRef = database.ref('users');   
+    // 2. Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const auth = getAuth(app);
+    const userRef = ref(db, "users/user1");
 
-        // **4. Firebase Authentication**
-        const auth = firebase.auth();
+    // 3. Authentication state
+    onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        window.location.href = "signup.html";
+      } else {
+        console.log("User logged in:", user);
+      }
+    });
 
-        // **5. Handle Authentication State**
-        auth.onAuthStateChanged(function(user) {
-            if (!user) {
-                // Redirect to signup page if no user is logged in
-                window.location.href = 'signup.html'; // Adjust the path if necessary
-            } else {
-                console.log("User logged in:", user);
-            }
-        });
+    // 4. Realtime updates
+    onValue(userRef, (snapshot) => {
+      const data = snapshot.val();
+      console.log("User Data:", data);
+      res.innerText = "User Data:\n" + JSON.stringify(data, null, 2);
+      console.table(data);
+    });
 
-        // **6. Write Data**
-        function writeData() {
-            usersRef.child("user1").set({
-                name: "Eyob",
-                age: 16,
-                city: "Addis Ababa"
-            }).then(() => console.log("Data Written"))
-              .catch(error => console.error("Error:", error));
-        }
+    // 5. Write Data
+    window.writeData = function () {
+      set(userRef, {
+        name: "Eyob",
+        age: 16,
+        city: "Addis Ababa"
+      })
+      .then(() => console.log("Data Written"))
+      .catch((error) => console.error("Error:", error));
+    };
 
-        onValue(usersRef.child("user1"), (snapshot) => {            
-               const userData = snapshot.val();
-               console.log("User Data:", JSON.stringify(userData, null, 2));
-               res.innerText = "User Data:\n" + JSON.stringify(userData, null, 2);
-               console.table(userData);
-            })
-            .catch(error => console.error("Error:", error));
+    // 6. Read Data
+    window.readData = function () {
+      get(userRef)
+        .then((snapshot) => {
+          const data = snapshot.val();
+          console.log("User Data:", data);
+          res.innerText = "User Data:\n" + JSON.stringify(data, null, 2);
+        })
+        .catch((error) => console.error("Error:", error));
+    };
 
-      
-        // **7. Read Data**
-        function readData() {
-            usersRef.child("user1").once("value")
-            .then(snapshot => {
-               const userData = snapshot.val();
-               console.log("User Data:", JSON.stringify(userData, null, 2));
-               res.innerText = "User Data:\n" + JSON.stringify(userData, null, 2);
-               console.table(userData);
-            })
-            .catch(error => console.error("Error:", error));
-        }
+    // 7. Update Data
+    window.updateData = function () {
+      update(userRef, { age: 17 })
+        .then(() => console.log("Data Updated"))
+        .catch((error) => console.error("Error:", error));
+    };
 
-        // **8. Update Data**
-        function updateData() {
-            usersRef.child("user1").update({
-                age: 17
-            }).then(() => console.log("Data Updated"))
-              .catch(error => console.error("Error:", error));
-        }
+    // 8. Delete Data
+    window.deleteData = function () {
+      remove(userRef)
+        .then(() => console.log("Data Deleted"))
+        .catch((error) => console.error("Error:", error));
+    };
 
-        // **9. Delete Data**
-        function deleteData() {
-            usersRef.child("user1").remove()
-                .then(() => console.log("Data Deleted"))
-                .catch(error => console.error("Error:", error));
-        }
+    // 9. Logout
+    window.logout = function () {
+      signOut(auth)
+        .then(() => {
+          console.log("User logged out");
+          window.location.href = "login.html";
+        })
+        .catch((error) => console.error("Logout Error:", error));
+    };
 
-        // **10. Logout Function**
-        function logout() {
-            auth.signOut()
-                .then(() => {
-                    console.log("User logged out");
-                    window.location.href = 'login.html'; // Redirect to login page after logout
-                })
-                .catch((error) => {
-                    console.error("Error logging out:", error.message);
-                });
-        }
-        function gofs(){
-           window.location.href = "firestore.html";
-        
-        }
-        function goda(){
-           window.location.href = "dama.html";
-        
-        }
-    </script>
+    // 10. Navigation functions
+    window.gofs = () => window.location.href = "firestore.html";
+    window.goda = () => window.location.href = "dama.html";
+  </script>
 </body>
 </html>
