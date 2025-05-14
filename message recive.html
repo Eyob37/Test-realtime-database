@@ -25,7 +25,8 @@
     import { getDatabase, ref, set, update, remove, child, get, onValue } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js";
 
 
-/*
+const h2 = document.querySelector("h2");
+
   Notification.requestPermission();
 
 if ("serviceWorker" in navigator) {
@@ -41,7 +42,7 @@ function showNotification(title, body) {
   } catch (e) {
     alert("Notification failed: " + e.message);
   }
-}*/
+}
 
 
     const firebaseConfig = {
@@ -64,6 +65,7 @@ function showNotification(title, body) {
         const data = snapshot.val();   
         if(data == true){
              showNotification("from chacker", "she thouched yes");
+             h2.innerText = "It's successful! ";
         }
     });
        
